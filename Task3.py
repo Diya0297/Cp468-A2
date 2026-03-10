@@ -1,6 +1,8 @@
 from matplotlib import pyplot as plt
 import csv
-
+import numpy as np
+import random
+import math
 '''
 A smart farming company is developing an AI-based weather prediction model to help farmers make better decisions about irrigation and crop protection decisions. They want to use historical weather data (temperature and humidity) to predict whether it will rain.
 To achieve this, they will train a Perceptron-based AI model to classify weather conditions into two categories:
@@ -48,4 +50,83 @@ def a():
 
     plt.show()
 
-a()
+class Perceptron:
+    def __init__(self, l_rate = 0.1, i = 10):
+        self.l_rate = l_rate
+        self.i = i
+        self.activation_func = self._unit_step_func
+        self.weights = None
+        self.bias = None
+
+    def fit(self, X, y):
+        n_samples, n_features = X.shape
+
+        self.weights = np.random.uniform(-0.5, 0.5, size = (n_features))
+     
+        self.bias = 0
+
+        for _ in range(self.i):
+            for idx, x_i in enumerate(X):
+                linear_o = np.dot(x_i, self.weights) + self.bias
+                y_predict = self.activation_func(linear_o)
+
+                update = self.l_rate *(y[idx] - y_predict)
+                self.weights += update * x_i
+                self.bias += update 
+                
+    def prediction(self, X):
+        linear_o = np.dot(X, self.weights) + self.bias
+        y_perdict = self.activation_func(linear_o)
+        return y_perdict
+
+    def _unit_step_func(self, x):
+        return np.where(x>= 0,1,0)
+
+
+def b(i):
+    X, y = [], []
+
+    #get data and organize it
+    with open('data/WeatherData_Q3.csv', 'r') as csv_f:
+        csv_reader = csv.DictReader(csv_f)
+
+        for row in csv_reader:
+            
+            data = [float(row['humid']), float(row['temp'])]
+            X.append(data)
+
+            y.append(int(row['rain']))
+    
+    X, y = np.array(X), np.array(y)
+
+    X_train, X_test = X[:15], X[15:]
+    y_train, y_test = y[:15], y[15:]
+
+    p = Perceptron()
+
+    p.fit(X_train,y_train)
+    perdictions= p.prediction(X_test)
+
+    fig = plt.figure()
+    ax = fig.add_subplot(1,1,1)
+    plt.scatter(X_train[:,0], X_train[:,1], marker='o', c=y_train)
+
+    x0_1 = np.amin(X_train[:,0])
+    x0_2 = np.amax(X_train[:,0])
+
+    x1_1 = (-p.weights[0] *x0_1 - p.bias) / p.weights[1]
+    x1_2 = (-p.weights[0] *x0_2 - p.bias) / p.weights[1]
+
+    ax.plot([x0_1,x0_2], [x1_1,x1_2], 'k')
+
+    ymin = np.amin(X_train[:,1])
+    ymax = np.amin(X_train[:,1])
+
+    ax.set_ylim([ymin-3,ymax+3])
+    plt.show()
+
+b(1000)
+
+    
+
+
