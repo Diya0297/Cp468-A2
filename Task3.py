@@ -1,8 +1,7 @@
 from matplotlib import pyplot as plt
 import csv
 import numpy as np
-import random
-import math
+
 '''
 A smart farming company is developing an AI-based weather prediction model to help farmers make better decisions about irrigation and crop protection decisions. They want to use historical weather data (temperature and humidity) to predict whether it will rain.
 To achieve this, they will train a Perceptron-based AI model to classify weather conditions into two categories:
@@ -50,40 +49,54 @@ def a():
 
     plt.show()
 
+'''
+Implement a perceptron algorithm manually in Python 
+'''
 class Perceptron:
     def __init__(self, l_rate = 0.1, i = 10):
-        self.l_rate = l_rate
+        self.l_rate = l_rate #dont input learning rate because it should be 0.1
         self.i = i
         self.activation_func = self._unit_step_func
         self.weights = None
         self.bias = None
 
     def fit(self, X, y):
-        n_samples, n_features = X.shape
+        k_samples, k_features = X.shape
 
-        self.weights = np.random.uniform(-0.5, 0.5, size = (n_features))
-     
+        #initalizing weights to be randomly between -0.5, and 0.5
+        self.weights = np.random.uniform(-0.5, 0.5, size = (k_features)) 
+        
+        #Bias term for implementation 
         self.bias = 0
-
+       
         for _ in range(self.i):
             for idx, x_i in enumerate(X):
                 linear_o = np.dot(x_i, self.weights) + self.bias
                 y_predict = self.activation_func(linear_o)
 
-                update = self.l_rate *(y[idx] - y_predict)
+                #manually coding the weight updates --> is there a formula to update the weights? cause if i do this its always 0
+                update = self.l_rate * (y[idx] - y_predict)
+
                 self.weights += update * x_i
                 self.bias += update 
+                
+                '''
+                CHECKING FOR ERRORS:
+                if update != 0:
+                    print(f"_ : {_} | Update: {update} | Weights: {self.weights}") '''
+
                 
     def prediction(self, X):
         linear_o = np.dot(X, self.weights) + self.bias
         y_perdict = self.activation_func(linear_o)
         return y_perdict
 
+    #ACTIVATION FUNCTION --> manually coded
     def _unit_step_func(self, x):
-        return np.where(x>= 0,1,0)
+        return np.where(x>= 0, 1, 0)
 
 
-def b(i):
+def b(iterations):
     X, y = [], []
 
     #get data and organize it
@@ -92,6 +105,7 @@ def b(i):
 
         for row in csv_reader:
             
+            #using humidity and temperature as input
             data = [float(row['humid']), float(row['temp'])]
             X.append(data)
 
@@ -99,14 +113,19 @@ def b(i):
     
     X, y = np.array(X), np.array(y)
 
-    X_train, X_test = X[:15], X[15:]
-    y_train, y_test = y[:15], y[15:]
+    #split the dataset into training set and test set
+    X_train, X_test = X[:14], X[15:]
+    y_train, y_test = y[:14], y[15:]
 
-    p = Perceptron()
+    #create a perceptron
+    p = Perceptron(i = iterations)
 
     p.fit(X_train,y_train)
     perdictions= p.prediction(X_test)
-
+    
+    #REPORT THE TRAINING AND ACCURACY AFTER TRAINING
+    print(f'Perceptron accuracy classification is: {accuracy(y_test, perdictions)}')
+   
     fig = plt.figure()
     ax = fig.add_subplot(1,1,1)
     plt.scatter(X_train[:,0], X_train[:,1], marker='o', c=y_train)
@@ -120,13 +139,25 @@ def b(i):
     ax.plot([x0_1,x0_2], [x1_1,x1_2], 'k')
 
     ymin = np.amin(X_train[:,1])
-    ymax = np.amin(X_train[:,1])
+    ymax = np.amax(X_train[:,1])
 
     ax.set_ylim([ymin-3,ymax+3])
     plt.show()
 
-b(1000)
 
-    
+#for predicting accuracy 
+def accuracy(y_true, y_predict):
+    accuracy = np.sum(y_true == y_predict) / len(y_true)
+    return accuracy
+
+
+#runs program for Problem 3 part a
+a()
+
+#train on number of 'iterations'
+iterations = 999
+b(iterations)
+
+
 
 
