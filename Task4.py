@@ -217,8 +217,9 @@ def backtrack(assignment, domains, graph):
 
 def main():
 
-    # Optional: draw the constraint graph
-    # draw_constraint_graph()
+    # close the graph to see the results on terminal
+    # plot the constraint graph
+    plotGraph()
 
     # Run AC-3 to get reduced domains
     domains = AC3()
