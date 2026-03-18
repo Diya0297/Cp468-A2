@@ -106,17 +106,30 @@ def b(iterations):
         for row in csv_reader:
             
             #using humidity and temperature as input
-            data = [float(row['humid']), float(row['temp'])]
+            data = [float(row['temp']),float(row['humid'])]
             X.append(data)
 
             y.append(int(row['rain']))
     
     X, y = np.array(X), np.array(y)
 
-    #split the dataset into training set and test set
+    
+    #split the dataset into training set and test set (split at 15)
     X_train, X_test = X[:14], X[15:]
     y_train, y_test = y[:14], y[15:]
+    
 
+    ''' 
+    #Split at 5
+    X_train, X_test = X[:4], X[5:]
+    y_train, y_test = y[:4], y[5:]
+    '''
+    '''
+    #split at 18
+    X_train, X_test = X[:17], X[18:]
+    y_train, y_test = y[:17], y[18:]
+    '''
+    
     #create a perceptron
     p = Perceptron(i = iterations)
 
@@ -128,20 +141,25 @@ def b(iterations):
    
     fig = plt.figure()
     ax = fig.add_subplot(1,1,1)
-    plt.scatter(X_train[:,0], X_train[:,1], marker='o', c=y_train)
+    ax.scatter(X_train[y_train == 0, 0], X_train[y_train == 0,1],label= "No Rain", c='blue', marker='s')
+    ax.scatter(X_train[y_train == 1, 0], X_train[y_train == 1,1],label= "Rain",c='red', marker='o')
 
+    #calc the line
     x0_1 = np.amin(X_train[:,0])
     x0_2 = np.amax(X_train[:,0])
-
     x1_1 = (-p.weights[0] *x0_1 - p.bias) / p.weights[1]
     x1_2 = (-p.weights[0] *x0_2 - p.bias) / p.weights[1]
 
-    ax.plot([x0_1,x0_2], [x1_1,x1_2], 'k')
+    ax.plot([x0_1,x0_2], [x1_1,x1_2], 'k', label = "Decision Boundary")
 
+    #set limits and labels
     ymin = np.amin(X_train[:,1])
     ymax = np.amax(X_train[:,1])
-
     ax.set_ylim([ymin-3,ymax+3])
+    plt.title("Weather Perceptron Plotted")
+    plt.xlabel("Temperature")
+    plt.ylabel("Humidity")
+    plt.legend()
     plt.show()
 
 
@@ -155,7 +173,7 @@ def accuracy(y_true, y_predict):
 a()
 
 #train on number of 'iterations'
-iterations = 999
+iterations = 500
 b(iterations)
 
 
