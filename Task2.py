@@ -80,7 +80,7 @@ def plot_clusters(points, labels, centroids, k):
     for i, c in enumerate(centroids):
         plt.scatter(c[0], c[1], c='black', marker='X', s=200)
 
-    plt.title(f"K-Means Clustering (k = {k})")
+    plt.title(f"Customer Data after K-means Clustering")
     plt.xlabel("Average Monthly Spending(f1)")
     plt.ylabel("Total Number of Purchases(f2)")
     plt.grid(True)
