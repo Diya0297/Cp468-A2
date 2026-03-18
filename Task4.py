@@ -153,10 +153,6 @@ def AC3():
                 if Xk != Xj:
                     queue.append((Xk,Xi))
 
-    print("Final Domains:")
-    for var in domains:
-        print(var,"=",domains[var])
-    
     return domains
 
 def valid(assignment, graph):
